@@ -1,0 +1,15 @@
+{
+  "expo": {
+   "name": "My Gunny",
+   "icon": "icon.png",
+   "version": "1.0.0",
+   "slug": "your-app-slug",
+   "sdkVersion": "26.0.0",
+   "ios": {
+     "bundleIdentifier": "com.pscd.gunny"
+   },
+   "android": {
+     "package": "com.pscd.gunny"
+   }
+  }
+}
