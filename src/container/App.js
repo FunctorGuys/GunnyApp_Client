@@ -24,10 +24,18 @@ class App extends React.Component {
         console.log(props);
     }
 
+    handlePress = () => {
+        this.props.navigation.navigate("ConnectServer");
+    }
+
     render() {
         return (
             <View>
                 <Text>sadfasf</Text>
+                <Button
+                    onPress={this.handlePress}
+                    title="Move to Connect UI"
+                />
             </View>
         );
     }

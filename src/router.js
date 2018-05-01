@@ -14,7 +14,7 @@ const AppRoute = StackNavigator({
     App: { screen: App },
     ConnectServer: { screen: ConnectServer },
     Login: { screen: Login },
-    Rooms: { screen, Rooms },
+    Rooms: { screen: Rooms },
     WaitingRoom: { screen: WaitingRoom },
     GamePlayGround: { screen: GamePlayGround }
 });
