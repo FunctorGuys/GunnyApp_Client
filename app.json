@@ -11,5 +11,8 @@
    "android": {
      "package": "com.pscd.gunny"
    }
+  },
+  "packagerOpts": {
+    "nonPersistent": true
   }
 }

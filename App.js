@@ -1,5 +1,4 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
 
 // FOR REDUX
 import rootReducer from "./src/reducer";
