@@ -34,7 +34,7 @@ class GamePlayGroud extends React.Component {
                 y: 0
             },
             sliderPower: {
-                value: 0,
+                value: 80,
                 isRunning: false,
             },
             sliderAlpha: {
@@ -60,6 +60,7 @@ class GamePlayGroud extends React.Component {
         this.element = {};
         this.wWidth = Dimensions.get('window').width;
         this.wHeigth = Dimensions.get('window').height;
+        this.arPointSlider = [];
     }
 
     componentWillMount() {
@@ -80,7 +81,7 @@ class GamePlayGroud extends React.Component {
     initSlider = () => {
         this.setState({
             sliderPower: {
-                value: 0,
+                value: 80,
                 isRunning: false,
             },
             sliderAlpha: {
@@ -98,14 +99,17 @@ class GamePlayGroud extends React.Component {
         if (this.state.theNextOne === -1) {
             alpha = this.state.sliderAlpha.value*Math.PI/180;
         } else {
-            alpha = (this.state.sliderAlpha.value + 90)*Math.PI/180;
+            alpha = (180 - this.state.sliderAlpha.value)*Math.PI/180;
         }
         
         this.intervalStone = setInterval(() => {
             x += -10*this.state.theNextOne;
             y = (-10/(2*Math.pow(this.state.sliderPower.value, 2)*Math.pow(Math.cos(alpha), 2)))*Math.pow(x, 2) + x*Math.tan(alpha);
             this.moveStone(xStone + x, yStone - y);
-            if (yStone - y > this.wHeigth) this.stopStone();
+            if (yStone - y > this.wHeigth) {
+                clearInterval(this.intervalStone);
+                this.stopStone();
+            }
         }, 1)
     }
 
@@ -113,7 +117,6 @@ class GamePlayGroud extends React.Component {
         this.setTheNextOne(-this.state.theNextOne);
         this.initStone();
         this.initSlider();
-        clearInterval(this.intervalStone);
     }
 
     setTheNextOne = (dir) => {
@@ -138,26 +141,28 @@ class GamePlayGroud extends React.Component {
     }
 
     onPressShot = () => {
-        if (this.state.sliderPower.isRunning) {
-            clearInterval(this.intervalSliderPower);
-            this.setState(() => {
-                this.state.sliderPower.isRunning = false;
-                return this.state;
-            })
-            this.shotStone();
-            return;
-        }
-        this.setState(() => {
-            this.state.sliderPower.isRunning = true;
-            return this.state;
-        })
-        this.intervalSliderPower = setInterval(() => {
-            this.setState(() => {
-                this.state.sliderPower.value += 1;
-                if (this.state.sliderPower.value == 100) this.state.sliderPower.value = 0;
-                return this.state;
-            })
-        }, 1);
+        this.shotStone();
+        // if (this.state.sliderPower.isRunning) {
+        //     clearInterval(this.intervalSliderPower);
+        //     this.setState(() => {
+        //         this.state.sliderPower.isRunning = false;
+        //         return this.state;
+        //     })
+        //     this.shotStone();
+        //     return;
+        // }
+        // this.setState(() => {
+        //     this.state.sliderPower.isRunning = true;
+        //     return this.state;
+        // })
+        
+        // this.intervalSliderPower = setInterval(() => {
+        //     this.setState(() => {
+        //         this.state.sliderPower.value += 1;
+        //         if (this.state.sliderPower.value == 100) this.state.sliderPower.value = 0;
+        //         return this.state;
+        //     })
+        // }, 1);
     }
 
     handleChangeSliderAlpha = e => {
@@ -189,7 +194,7 @@ class GamePlayGroud extends React.Component {
                         step={1}
                         maximumValue={90}
                         onValueChange={this.handleChangeSliderAlpha}
-                        value={this.state.sliderAlpha.value}
+                        // value={this.state.sliderAlpha.value}
                     />
                     <SliderV2 color="#16ff64" value={this.state.sliderPower.value} />
                     <Text

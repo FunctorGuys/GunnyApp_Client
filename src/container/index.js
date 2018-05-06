@@ -3,7 +3,7 @@ import ConnectServer from "./ConnectServer";
 import Login from "./Login";
 import Rooms from "./Rooms";
 import WaitingRoom from "./WaitingRoom";
-import GamePlayGround from "./GamePlayGroud";
+import GamePlayGround from "./GamePlayGround";
 
 export {
     App,
