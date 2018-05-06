@@ -7,14 +7,17 @@ import {
     Dimensions
 } from "react-native";
 
+const uuid = require('uuid');
+
 class GamePlayGround extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             squares: [],
+            whoWin: null,
         }
 
-        this.numColSquare = 5;
+        this.numColSquare = 10;
         this.wWidth = Dimensions.get('window').width;
         this.wHeigth = Dimensions.get('window').height;
         this.sizeSquare = parseInt(((this.wWidth > this.wHeigth ? this.wHeigth : this.wWidth) - 50)/this.numColSquare, 10);
@@ -28,7 +31,8 @@ class GamePlayGround extends React.Component {
                     newRowAr.push({
                         id: '' + i +  j,
                         isFill: false,
-                        text: "X",
+                        isWin: false,
+                        text: "",
                     });
                 }
                 this.state.squares.push(newRowAr);
@@ -39,13 +43,119 @@ class GamePlayGround extends React.Component {
 
     onPressSquare = _sq => {
         return () => {
-            this.setState(() => {
-                const posSq = _sq.id.split("");
-                this.state.squares[parseInt(posSq[0])][parseInt(posSq[1])].isFill = true;
-                return this.state;
-            })
+            const posSq = _sq.id.split("");
+            const x = parseInt(posSq[0]);
+            const y = parseInt(posSq[1]);
+            if (!this.state.squares[x][y].isFill) {
+                this.setState(() => {
+                    this.state.squares[x][y].isFill = true;
+                    this.state.squares[x][y].text = 'O';
+                    return this.state;
+                }, this.checkCaroWin(x, y, isWin => {
+                    if (isWin) {
+                        alert("DONE");
+                    }
+                }));
+                
+            }
         }
     }
+
+    checkCaroWin = (x, y, cb) => {
+        return () => {
+            const text = this.state.squares[x][y].text;
+            let dem = 0;
+            let isChecked = false;
+            // checkNgang
+            for(let ng = x - 4; ng <= x + 4 ; ng++) {
+                if (ng < 0 || ng > this.numColSquare - 1) continue;
+                if(this.state.squares[ng][y].isFill && this.state.squares[ng][y].text === text) dem++;
+                else dem = 0;
+                if (dem === 5) {
+                    for(let w = ng - 4; w <= ng; w++) {
+                        this.setState(() => {
+                            this.state.squares[w][y].isWin = true;
+                            this.state.whoWin = this.state.squares[x][y].text;
+                            return this.state;
+                        });
+                    }
+                    isChecked = true;
+                    cb(true);
+                    break;
+                }
+            }
+            if (isChecked) return;
+            // check doc
+            dem = 0;
+            for(let doc = y - 4; doc <= y + 4 ; doc++) {
+                if (doc < 0 || doc > this.numColSquare - 1) continue;
+                if(this.state.squares[x][doc].isFill && this.state.squares[x][doc].text === text) dem++;
+                else dem = 0;
+                if (dem === 5) {
+                    for(let w = doc - 4; w <= doc; w++) {
+                        this.setState(() => {
+                            this.state.squares[x][w].isWin = true;
+                            this.state.whoWin = this.state.squares[x][y].text;
+                            return this.state;
+                        });
+                    }
+                    isChecked = true;
+                    cb(true);
+                    break;
+                }
+            }
+            if (isChecked) return;
+
+            // Cheo trai
+            if (isChecked) return;
+            dem = 0;
+            for(let cheoT = x - 4; cheoT <= x + 4 ; cheoT++) {
+                const _x = cheoT;
+                const _y = y - (x - cheoT);
+
+                if (_x < 0 || _y < 0 || _x > this.numColSquare - 1 || _y > this.numColSquare - 1) continue;
+                if(this.state.squares[_x][_y].isFill && this.state.squares[_x][_y].text === text) dem++;
+                else dem = 0;
+                if (dem === 5) {
+                    for(let w = _x - 4; w <= _x; w++) {
+                        const _w = _y - (_x - w);
+                        this.setState(() => {
+                            this.state.squares[w][_w].isWin = true;
+                            this.state.whoWin = this.state.squares[x][y].text;
+                            return this.state;
+                        });
+                    }
+                    isChecked = true;
+                    cb(true);
+                    break;
+                }
+            }
+            if (isChecked) return;
+            // Cheo phai
+            dem = 0;
+            for(let cheoP = x - 4; cheoP <= x + 4 ; cheoP++) {
+                const _x = cheoP;
+                const _y = y + (x - cheoP);
+
+                if (_x < 0 || _y < 0 || _x > this.numColSquare - 1 || _y > this.numColSquare - 1) continue;
+                if(this.state.squares[_x][_y].isFill && this.state.squares[_x][_y].text === text) dem++;
+                else dem = 0;
+                if (dem === 5) {
+                    for(let w = _x - 4; w <= _x; w++) {
+                        const _w = _y + (_x - w);
+                        this.setState(() => {
+                            this.state.squares[w][_w].isWin = true;
+                            this.state.whoWin = this.state.squares[x][y].text;
+                            return this.state;
+                        });
+                    }
+                    isChecked = true;
+                    cb(true);
+                    break;
+                }
+            }
+        }
+    } 
 
     render() {
         return (
@@ -61,7 +171,7 @@ class GamePlayGround extends React.Component {
                 {
                     this.state.squares.map(rowSq => {
                         return (
-                            <View>
+                            <View key={uuid()}>
                                 {
                                     rowSq.map(sq => {
                                         return (
@@ -76,7 +186,12 @@ class GamePlayGround extends React.Component {
                                             >
                                                 {
                                                     sq.isFill ? 
-                                                    <Text style={{ textAlign: 'center' }}>{sq.text}</Text>
+                                                    <Text style={{
+                                                        textAlign: 'center',
+                                                        backgroundColor: sq.isWin ? 'green' : 'transparent',
+                                                        height: '100%',
+                                                        fontSize: this.sizeSquare/2
+                                                    }}>{sq.text}</Text>
                                                     : null
                                                 }
                                             </TouchableOpacity>
