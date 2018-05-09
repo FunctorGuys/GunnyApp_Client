@@ -1,17 +1,29 @@
 import {
-    ADD_USER
+    LOGIN_USER,
+    LOGOUT_USER
 } from "../constants/action.constants";
-const initReducer = [];
+const initReducer = {
+    isLogged: false,
+    userLogged: {}
+};
 
 const users = (state = initReducer, { type, payload } ) => {
     switch(type) {
-        case ADD_USER: {
-            console.log(payload);
-            return [
+        case LOGIN_USER: {
+            return {
                 ...state,
-                payload
-            ]
+                isLogged: true,
+                userLogged: payload
+            }
         }
+
+        case LOGOUT_USER: {
+            return {
+                isLogged: false,
+                userLogged: {}
+            }
+        }
+        
         default: return state;
     }
 }
