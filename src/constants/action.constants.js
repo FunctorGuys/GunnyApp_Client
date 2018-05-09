@@ -1,6 +1,7 @@
 // USER ACTION
 export const LOGIN_USER = "LOGIN_USER";
 export const LOGOUT_USER = "LOGOUT_USER";
+export const SAVE_TOKEN = "SAVE_TOKEN";
 
 // ROOMS ACTION
 export const GET_ROOMS = "GET_ROOMS";

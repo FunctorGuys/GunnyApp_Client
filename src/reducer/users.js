@@ -1,10 +1,12 @@
 import {
     LOGIN_USER,
-    LOGOUT_USER
+    LOGOUT_USER,
+    SAVE_TOKEN
 } from "../constants/action.constants";
 const initReducer = {
     isLogged: false,
-    userLogged: {}
+    userLogged: {},
+    token: "",
 };
 
 const users = (state = initReducer, { type, payload } ) => {
@@ -14,6 +16,13 @@ const users = (state = initReducer, { type, payload } ) => {
                 ...state,
                 isLogged: true,
                 userLogged: payload
+            }
+        }
+
+        case SAVE_TOKEN: {
+            return {
+                ...state,
+                token: payload
             }
         }
 

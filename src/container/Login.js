@@ -4,7 +4,13 @@ import {
     TextInput,
     Button,
     StyleSheet
- } from "react-native";
+} from "react-native";
+import { connect } from "react-redux";
+
+import {
+    loginUser,
+    getAbc
+} from "../actions/users";
 
 class Login extends React.Component {
     constructor(props) {
@@ -12,11 +18,17 @@ class Login extends React.Component {
         this.form_data = {};
     }
 
-    handleSubmit = () => {
-        const username = this.form_data.username._lastNativeText;
-        const password = this.form_data.password._lastNativeText;
-        console.log(username);
-        console.log(password);
+    handleSubmit = async () => {
+        const username = this.form_data.username._lastNativeText || "";
+        const password = this.form_data.password._lastNativeText || "";
+        
+        try {
+            await this.props.loginUser({username, password});
+            const { navigate } = this.props.navigation;
+            navigate("Rooms");
+        } catch(er) {
+            console.log(er);
+        }
     }
 
     render() {
@@ -71,4 +83,15 @@ const styles = StyleSheet.create({
     }
 })
 
-export default Login;
+const mapStateToProps = state => {
+    return {
+        ...state,
+    }
+}
+
+const mapDispatchToProps = {
+    loginUser,
+    getAbc,
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Login);

@@ -1,13 +1,13 @@
 import axios from "axios";
-import { API_URL } from "app/config";
+// import { API_URL } from "app/config";
 
-export const request = (
-  opts = {},
-) => {
+export const request = (API_URL, token = "") => {
+ 
   const defaultOptions = {
     headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
-      ...opts,
+      Authorization: `Bearer ${token}`,
+      // "Content-Type": "application/x-www-form-urlencoded"
+      "Content-Type": "application/json"
     },
     timeout: 15000,
   };
