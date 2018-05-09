@@ -5,6 +5,9 @@ import {
     Button,
     StyleSheet
  } from "react-native";
+// Will move this to socket action
+import SocketIOClient from 'socket.io-client';
+//
 
 class ConnectServer extends React.Component {
     constructor(props) {
@@ -17,11 +20,17 @@ class ConnectServer extends React.Component {
 
     handleSubmit = () => {
         const { navigate } = this.props.navigation;
-        if (this.form_data.ip._lastNativeText) {
-            this.setState({
-                isConnecting: true
+        const hostSocket = this.form_data.ip._lastNativeText;
+        if (hostSocket) {
+            this.socket = SocketIOClient('http://192.168.0.47:3001');
+            this.socket.on("mes", data => {
+                console.log(data);
             })
-            navigate("Login");
+
+            // this.setState({
+            //     isConnecting: true
+            // })
+            // navigate("Login");
         }
     }
 

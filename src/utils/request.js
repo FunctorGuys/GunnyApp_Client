@@ -6,8 +6,10 @@ export const request = (
 ) => {
   const defaultOptions = {
     headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
       ...opts,
     },
+    timeout: 15000,
   };
   /*
   |--------------------------------------------------
@@ -16,20 +18,10 @@ export const request = (
   */
   const axiosApi = axios.create({
     baseURL: API_URL,
+    ...defaultOptions,
   });
 
-  return {
-    get: (url, options = {}) =>
-      axiosApi.get(url, { ...defaultOptions, ...options }),
-    post: (url, data, options = {}) =>
-      axiosApi.post(url, data, { ...defaultOptions, ...options }),
-    put: (url, data, options = {}) =>
-      axiosApi.put(url, data, { ...defaultOptions, ...options }),
-    patch: (url, data, options = {}) =>
-      axiosApi.put(url, data, { ...defaultOptions, ...options }),
-    delete: (url, options = {}) =>
-      axiosApi.delete(url, { ...defaultOptions, ...options }),
-  };
+  return axiosApi;
 };
 
 export default request;
