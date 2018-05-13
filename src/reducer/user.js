@@ -3,13 +3,26 @@ import {
     LOGOUT_USER,
     SAVE_TOKEN
 } from "../constants/action.constants";
+// const initReducer = {
+//     isLogged: false,
+//     userLogged: {},
+//     token: "",
+// };
+
 const initReducer = {
-    isLogged: false,
-    userLogged: {},
+    isLogged: true,
+    userLogged: {
+        id: 155112,
+        username: "jinsphan",
+        fullname: "Jins Phan",
+        win: 11,
+        lose: 22,
+        rate: 0
+    },
     token: "",
 };
 
-const users = (state = initReducer, { type, payload } ) => {
+const user = (state = initReducer, { type, payload } ) => {
     switch(type) {
         case LOGIN_USER: {
             return {
@@ -37,4 +50,4 @@ const users = (state = initReducer, { type, payload } ) => {
     }
 }
 
-export default users;
+export default user;

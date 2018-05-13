@@ -11,9 +11,19 @@ import {
     Animated,
  } from "react-native";
 
+import {
+    connect
+} from "react-redux";
+
  import {
      Room
 } from "../components"; 
+
+import {
+    enterRoom
+} from "../actions/room";
+
+const uuid = require("uuid");
 
 class Rooms extends React.Component {
     constructor(props) {
@@ -28,8 +38,8 @@ class Rooms extends React.Component {
         console.log("new room");
     }
 
-    onPressEnterRoom = () => {
-
+    handleEnterRoom = (room_id) => {
+        this.props.enterRoom(room_id);
     }
    
     render() {
@@ -64,12 +74,17 @@ class Rooms extends React.Component {
                     left: 0,
                     top: 100,
                 }}>
-                    <Room />
-                    <Room />
-                    <Room />
-                    <Room />
-                    <Room />
-                    <Room />
+                    {
+                        this.props.allRooms.map(room => {
+                            return (
+                                <Room
+                                    key={uuid()}
+                                    roomData={room}
+                                    onEnterRoom={this.handleEnterRoom}
+                                />
+                            );
+                        })
+                    }
                 </ScrollView>
             </ImageBackground>
         )
@@ -126,4 +141,14 @@ const styles = StyleSheet.create({
     }
 })
 
-export default Rooms;
+const mapStateToProps = store => {
+    return {
+        allRooms: store.rooms.allRooms,
+    }
+}
+
+const mapDispatchToProps = {
+    enterRoom,
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Rooms);

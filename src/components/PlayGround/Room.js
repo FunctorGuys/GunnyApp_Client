@@ -11,19 +11,27 @@ import {
 class Room extends React.Component {
     constructor(props) {
         super(props);
+        this.state = {
+        }
 
         this.element = {}
+
+        console.log(this.props);
+    }
+
+    componentWillReceiveProps(nextProps) {
+        console.log(nextProps);
     }
 
     onPressCreateRoom = () => { 
-        console.log("new room");
     }
 
     onPressEnterRoom = () => {
-
+        this.props.onEnterRoom(this.props.roomData.id);
     }
    
     render() {
+        const { roomData } = this.props;
         return (
             <View style={styles.room}>
                 <View
@@ -31,7 +39,7 @@ class Room extends React.Component {
                         position: "absolute",
                         zIndex: 1,
                         top: 0,
-                        left: 10,
+                        left: 0,
                     }}
                 >
                     <Animated.Image source={require("../../images/player-icon-left.png")}
@@ -40,33 +48,45 @@ class Room extends React.Component {
                             width: 50,
                         }}
                     />
-                    <Text style={styles.text}>Jr Tinh</Text>
-                    <Text style={styles.text}>Lv. 1</Text>
+                    <Text style={styles.text}>{roomData.creater.fullname}</Text>
+                    <Text style={styles.text}>W: {roomData.creater.win} L:{roomData.creater.lose}</Text>
                 </View>
                 <View style={styles.buttonCenter} >
-                    <Button
-                        title="Vao Choi"
-                        color="#3f0000"
-                        onPress={this.onPressCreateRoom}
-                    />
+                    {
+                        roomData.isFull ?
+                        <Button
+                            disabled
+                            title="Đang chơi"
+                            color="#3f0000"
+                            onPress={() => {}}
+                        /> : 
+                        <Button
+                            title="Vào chơi"
+                            color="#3f0000"
+                            onPress={this.onPressEnterRoom}
+                        />
+                    }
                 </View>
-                <View
-                    style={{
-                        position: "absolute",
-                        zIndex: 1,
-                        top: 0,
-                        right: 10,
-                    }}
-                >
-                    <Animated.Image source={require("../../images/player-icon-right.png")}
+                {
+                    roomData.invitee.id &&
+                    <View
                         style={{
-                            height: 50,
-                            width: 50,
+                            position: "absolute",
+                            zIndex: 1,
+                            top: 0,
+                            right: 0,
                         }}
-                    />
-                    <Text style={styles.text}>Jr Tinh</Text>
-                    <Text style={styles.text}>Lv. 1</Text>
-                </View>
+                    >
+                        <Animated.Image source={require("../../images/player-icon-right.png")}
+                            style={{
+                                height: 50,
+                                width: 50,
+                            }}
+                        />
+                        <Text style={styles.text}>{roomData.invitee.fullname}</Text>
+                    <Text style={styles.text}>W: {roomData.invitee.win} L:{roomData.invitee.lose}</Text>
+                    </View>
+                }
             </View>
         )
     }

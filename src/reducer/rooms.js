@@ -7,12 +7,47 @@ import {
 } from "../constants/action.constants";
 
 const initReducer = {
-    allRooms: [],
+    allRooms: [
+        {
+            id: 154832146284,
+            name: "ROOM001",
+            isFull: true,
+            creater: {
+                id: 54554,
+                username: "user001",
+                fullname: "User 001",
+                isReady: false,
+                win: 2,
+                lose: 12,
+            },
+            invitee: {
+                id: 2444,
+                username: "user002",
+                fullname: "User 002",
+                isReady: true,
+                win: 3,
+                lose: 10,
+            }
+        },
+        {
+            id: 154832148884,
+            name: "ROOM002",
+            isFull: false,
+            creater: {
+                id: 5422554,
+                username: "user003",
+                fullname: "User 003",
+                isReady: false,
+                win: 12,
+                lose: 10,
+            },
+            invitee: {}
+        }
+    ],
     selectedRoom: {
-        me: {},
-        player: {},
-        isReady: false,
-        winner: null,
+        // idRoom: "ROOM002",
+        // isReady: false,
+        // winner: null,
     }
 }
 
@@ -53,9 +88,25 @@ export default function(state = initReducer, { type, payload }) {
         }
 
         case SELECT_ROOM: {
+            const allRooms = state.allRooms.map(room => {
+                if (room.id === payload.room_id) return {
+                    ...room,
+                    isFull: true,
+                    invitee: {
+                        ...payload.user,
+                        isReady: false,
+                    }
+                }
+                return room;
+            });
             return {
                 ...state,
-                selectedRoom: payload
+                allRooms,
+                selectedRoom: {
+                    idRoom: payload.room_id,
+                    isReady: false,
+                    winner: null
+                }
             }
         }
 
