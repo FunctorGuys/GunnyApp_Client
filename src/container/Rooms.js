@@ -20,7 +20,9 @@ import {
 } from "../components"; 
 
 import {
-    enterRoom
+    enterRoom,
+    leaveRoom,
+    onReady
 } from "../actions/room";
 
 const uuid = require("uuid");
@@ -41,8 +43,17 @@ class Rooms extends React.Component {
     handleEnterRoom = (room_id) => {
         this.props.enterRoom(room_id);
     }
+
+    handleLeaveRoom = (room_id) => {
+        this.props.leaveRoom(room_id);
+    }
+
+    handleOnReady = (room_id, user_id) => {
+        this.props.onReady(room_id, user_id);
+    }
    
     render() {
+        const roomSelected = this.props.allRooms.filter(room => room.id === this.props.selectedRoom.idRoom)[0];
         return (
             <ImageBackground
                 ref={ref => this.element.bg = ref}
@@ -75,7 +86,7 @@ class Rooms extends React.Component {
                     top: 100,
                 }}>
                     {
-                        this.props.allRooms.map(room => {
+                        !this.props.selectedRoom.idRoom ? this.props.allRooms.map(room => {
                             return (
                                 <Room
                                     key={uuid()}
@@ -83,7 +94,12 @@ class Rooms extends React.Component {
                                     onEnterRoom={this.handleEnterRoom}
                                 />
                             );
-                        })
+                        }) : 
+                        <Room
+                            roomData={roomSelected}
+                            onLeaveRoom={this.handleLeaveRoom}
+                            onPressReady={this.handleOnReady}
+                        />
                     }
                 </ScrollView>
             </ImageBackground>
@@ -143,12 +159,15 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = store => {
     return {
+        selectedRoom: store.rooms.selectedRoom,
         allRooms: store.rooms.allRooms,
     }
 }
 
 const mapDispatchToProps = {
     enterRoom,
+    leaveRoom,
+    onReady
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Rooms);

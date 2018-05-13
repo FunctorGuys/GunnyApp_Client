@@ -9,5 +9,6 @@ export const ADD_ROOM = "ADD_ROOM";
 export const REMOVE_ROOM = "REMOVE_ROOM";
 export const LEAVE_ROOM = "CANCEL_ROOM";
 export const SELECT_ROOM = "CHOOSE_ROOM";
+export const ON_READY = "ON_READY";
 
 // SOCKET

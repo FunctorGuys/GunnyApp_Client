@@ -4,6 +4,7 @@ import {
     REMOVE_ROOM,
     LEAVE_ROOM,
     SELECT_ROOM,
+    ON_READY,
 } from "../constants/action.constants";
 
 const initReducer = {
@@ -42,7 +43,21 @@ const initReducer = {
                 lose: 10,
             },
             invitee: {}
-        }
+        },
+        {
+            id: 154855212146284,
+            name: "ROOM003",
+            isFull: false,
+            creater: {
+                id: 12541215,
+                username: "user005",
+                fullname: "User 005",
+                isReady: false,
+                win: 21,
+                lose: 12,
+            },
+            invitee: {}
+        },
     ],
     selectedRoom: {
         // idRoom: "ROOM002",
@@ -81,8 +96,48 @@ export default function(state = initReducer, { type, payload }) {
         }
 
         case LEAVE_ROOM: {
+            // const curRoom = state.allRooms.filter(room => room.id === payload.room_id);
+            // let isRemove = true;
+            // if (curRoom.invitee.id) {
+            //     isRemove = false;
+            // }
+            // const allRooms = state.allRooms.map(room => {
+            //     if (room.id === payload.room_id && room.invitee.id) {
+            //         return {
+            //             ...room,
+            //             invitee: {},
+            //         }
+            //     }
+            //     return {
+            //         ...room
+            //     }
+            // })
+            const allRooms = state.allRooms.reduce((cur, next) => {
+                if (next.id === payload.room_id) {
+                    if (next.invitee.id) {
+                        return [
+                            ...cur,
+                            {
+                                ...next,
+                                invitee: {},
+                                isFull: false,
+                            }
+                        ];
+                    } else {
+                        return cur;
+                    }
+                } else {
+                    return [
+                        ...cur,
+                        {
+                            ...next,
+                        }
+                    ];
+                }
+            }, []);
             return {
                 ...state,
+                allRooms,
                 selectedRoom: initReducer.selectedRoom
             }
         }
@@ -104,9 +159,38 @@ export default function(state = initReducer, { type, payload }) {
                 allRooms,
                 selectedRoom: {
                     idRoom: payload.room_id,
-                    isReady: false,
                     winner: null
                 }
+            }
+        }
+
+        case ON_READY: {
+            const allRooms = state.allRooms.map(room => {
+                if (room.id === payload.room_id) {
+                    if (room.creater.id === payload.user_id) {
+                        return {
+                            ...room,
+                            creater: {
+                                ...room.creater,
+                                isReady: true,
+                            }
+                        }
+                    }
+                    if (room.invitee.id === payload.user_id) {
+                        return {
+                            ...room,
+                            invitee: {
+                                ...room.invitee,
+                                isReady: true,
+                            }
+                        }
+                    }
+                }
+                return room;
+            })
+            return {
+                ...state,
+                allRooms,
             }
         }
 
