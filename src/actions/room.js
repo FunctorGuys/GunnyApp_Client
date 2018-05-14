@@ -41,3 +41,27 @@ export const onReady = (room_id, user_id) => {
         })
     }
 }
+
+export const INIT_SQUARES = "initSquares";
+export const initSquares = (numColSquare) => dispatch => {
+    const squares = [];
+    for(let i = 0; i < numColSquare; i++) {
+        const newRowAr = [];
+        for (let j = 0; j < numColSquare; j++) {
+            newRowAr.push({
+                id: i + "|" + j,
+                isFill: false,
+                isWin: false,
+                text: "",
+            });
+        }
+        squares.push(newRowAr);
+    }
+    dispatch({
+        type: INIT_SQUARES,
+        payload: {
+            squares,
+        }
+    })
+}
+

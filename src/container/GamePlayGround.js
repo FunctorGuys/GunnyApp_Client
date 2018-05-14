@@ -1,4 +1,5 @@
 import React from "react";
+import { connect } from "react-redux";
 import {
     StyleSheet,
     View,
@@ -6,6 +7,15 @@ import {
     TouchableOpacity,
     Dimensions
 } from "react-native";
+
+import {
+    O_CARO,
+    X_CARO
+} from "../constants/caro.constants";
+
+import {
+    initSquares
+} from "../actions/room";
 
 const uuid = require('uuid');
 
@@ -21,6 +31,7 @@ class GamePlayGround extends React.Component {
         this.wWidth = Dimensions.get('window').width;
         this.wHeigth = Dimensions.get('window').height;
         this.sizeSquare = parseInt(((this.wWidth > this.wHeigth ? this.wHeigth : this.wWidth) - 50)/this.numColSquare, 10);
+        this.props.initSquares(this.numColSquare);
     }
 
     componentWillMount() {
@@ -29,7 +40,7 @@ class GamePlayGround extends React.Component {
                 const newRowAr = [];
                 for (let j = 0; j < this.numColSquare; j++) {
                     newRowAr.push({
-                        id: '' + i +  j,
+                        id: i + "|" + j,
                         isFill: false,
                         isWin: false,
                         text: "",
@@ -43,7 +54,7 @@ class GamePlayGround extends React.Component {
 
     onPressSquare = _sq => {
         return () => {
-            const posSq = _sq.id.split("");
+            const posSq = _sq.id.split("|");
             const x = parseInt(posSq[0]);
             const y = parseInt(posSq[1]);
             if (!this.state.squares[x][y].isFill) {
@@ -56,7 +67,6 @@ class GamePlayGround extends React.Component {
                         alert("DONE");
                     }
                 }));
-                
             }
         }
     }
@@ -218,4 +228,14 @@ const stylesGamePlayGround = StyleSheet.create({
     },
 });
 
-export default GamePlayGround;
+const mapStateToProps = store => {
+    return {
+        ...store,
+    }
+}
+
+const mapDispatchToProps = {
+    initSquares,
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(GamePlayGround);

@@ -7,6 +7,10 @@ import {
     ON_READY,
 } from "../constants/action.constants";
 
+import {
+    INIT_SQUARES,
+} from "../actions/room";
+
 const initReducer = {
     allRooms: [
         {
@@ -60,9 +64,10 @@ const initReducer = {
         },
     ],
     selectedRoom: {
-        // idRoom: "ROOM002",
-        // isReady: false,
-        // winner: null,
+        idRoom: null,
+        isReady: false,
+        winner: null,
+        squares: [],
     }
 }
 
@@ -191,6 +196,16 @@ export default function(state = initReducer, { type, payload }) {
             return {
                 ...state,
                 allRooms,
+            }
+        }
+
+        case INIT_SQUARES: {
+            return {
+                ...state,
+                selectedRoom: {
+                    ...state.selectedRoom,
+                    squares: payload.squares,
+                }
             }
         }
 
