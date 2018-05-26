@@ -13,6 +13,10 @@ import {
 
 import {
     RECEIVED_ACTIVE_ROOMS,
+    UPDATE_ROOM,
+    CANCEL_ROOM,
+    CREATE_ROOM,
+    ENTER_MY_ROOM,
 } from "../actions/socket";
 
 const initReducer = {
@@ -33,93 +37,64 @@ export default function(state = initReducer, { type, payload }) {
                 allRooms: payload.rooms,
             }
         }
-        
-        case ADD_ROOM: {
+
+        case UPDATE_ROOM: {
+            const allRooms = state.allRooms.map(room => {
+                return room.id === payload.room.id ? payload.room : room;
+            })
             return {
                 ...state,
-                allRooms: [
-                    ...state.allRooms,
-                    {
-                        ...payload
-                    },
-                ]
+                allRooms
             }
         }
 
-        case REMOVE_ROOM: {
-            const newRooms = state.allRooms.filter(room => room.id !== payload);
+        case CANCEL_ROOM: {
+            const allRooms = state.allRooms.filter(room => room.id !== payload.room_id);
             return {
                 ...state,
-                allRooms: newRooms,
+                allRooms,
             }
         }
 
         case LEAVE_ROOM: {
-            // const curRoom = state.allRooms.filter(room => room.id === payload.room_id);
-            // let isRemove = true;
-            // if (curRoom.invitee.id) {
-            //     isRemove = false;
-            // }
-            // const allRooms = state.allRooms.map(room => {
-            //     if (room.id === payload.room_id && room.invitee.id) {
-            //         return {
-            //             ...room,
-            //             invitee: {},
-            //         }
-            //     }
-            //     return {
-            //         ...room
-            //     }
-            // })
-            const allRooms = state.allRooms.reduce((cur, next) => {
-                if (next.id === payload.room_id) {
-                    if (next.invitee.id) {
-                        return [
-                            ...cur,
-                            {
-                                ...next,
-                                invitee: {},
-                                isFull: false,
-                            }
-                        ];
-                    } else {
-                        return cur;
-                    }
-                } else {
-                    return [
-                        ...cur,
-                        {
-                            ...next,
-                        }
-                    ];
-                }
-            }, []);
             return {
                 ...state,
-                allRooms,
                 selectedRoom: initReducer.selectedRoom
             }
         }
 
         case SELECT_ROOM: {
-            const allRooms = state.allRooms.map(room => {
-                if (room.id === payload.room_id) return {
-                    ...room,
-                    isFull: true,
-                    invitee: {
-                        ...payload.user,
-                        isReady: false,
-                    }
-                }
-                return room;
-            });
             return {
                 ...state,
-                allRooms,
                 selectedRoom: {
                     idRoom: payload.room_id,
                     winner: null
                 }
+            }
+        }
+
+        case ENTER_MY_ROOM: {
+            return {
+                ...state,
+                selectedRoom: {
+                    idRoom: payload.newRoom.id,
+                    isReady: false,
+                    winner: null,
+                    squares: [],
+                }
+            }
+        }
+
+        case CREATE_ROOM: {
+            console.log(CREATE_ROOM);
+            return {
+                ...state,
+                allRooms: [
+                    ...state.allRooms,
+                    {
+                        ...payload.newRoom,
+                    }
+                ]
             }
         }
 

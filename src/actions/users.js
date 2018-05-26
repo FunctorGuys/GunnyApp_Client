@@ -1,6 +1,10 @@
 import request from "../utils/request";
 import axios from "axios";
 
+if (!global.atob) {
+    global.atob = require('base-64').decode;
+}
+
 import {
     ADD_USER,
     SAVE_TOKEN
@@ -22,13 +26,29 @@ export const addUser = (user) => {
     }
 }
 
-export const loginUser = (user) => {
+export const LOGGED_USER = "LOGGED_USER";
+export const loginUser = (user, cb = () => {}) => {
     return (dispatch, getState) => {
         return _axios(getState).post("/user/login", user).then(res => {
+            let userLogged = JSON.parse(global.atob(res.data.token.split(".")[1]));
+            
+            userLogged = {
+                id: userLogged.id,
+                username: userLogged.username,
+                fullname: userLogged.fullname,
+                win: userLogged.win,
+                lose: userLogged.lose,
+                rate: userLogged.rate,
+            },
+
             dispatch({
-                type: SAVE_TOKEN,
-                payload: res.data.token
+                type: LOGGED_USER,
+                payload: {
+                    userLogged,
+                    token: res.data.token,
+                }
             })
+            
         })
     }
 }

@@ -7,6 +7,8 @@ import {
     ON_READY,
 } from "../constants/action.constants";
 
+const uuid = require("uuid");
+
 const getMySocket = getState => getState().server.mySocket;
 
 export const getActiveRooms = () => (dispatch, getState) => {
@@ -20,6 +22,8 @@ export const getActiveRooms = () => (dispatch, getState) => {
 export const enterRoom = room_id => {
     return (dispatch, getState) => {
         const user = getState().user.userLogged;
+        const mySocket = getMySocket(getState);
+        mySocket.emit("enterRoom", {room_id, user});
         dispatch({
             type: SELECT_ROOM,
             payload: {
@@ -32,11 +36,10 @@ export const enterRoom = room_id => {
 
 export const leaveRoom = room_id => {
     return (dispatch, getState) => {
+        const mySocket = getMySocket(getState);
+        mySocket.emit("leaveRoom", room_id);
         dispatch({
             type: LEAVE_ROOM,
-            payload: {
-                room_id,
-            }
         })
     }
 }
@@ -76,3 +79,20 @@ export const initSquares = (numColSquare) => dispatch => {
     })
 }
 
+export const createRoom = name => {
+    return (dispatch, getState) => {
+        const mySocket = getMySocket(getState);
+        const user = getState().user.userLogged;
+        const newRoom = {
+            id: uuid(),
+            name,
+            isFull: false,
+            creater: {
+                ...user,
+                isReady: false,
+            },
+            invitee: {}
+        }
+        mySocket.emit("createRoom", newRoom);
+    }
+}

@@ -43,6 +43,7 @@ class Login extends React.Component {
                 const { navigate } = this.props.navigation;
                 navigate("Rooms");
             } catch(er) {
+                console.log(er);
                 this.setState({
                     isConnecting: false,
                     error: "Username and password incorrect!"

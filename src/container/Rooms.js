@@ -9,21 +9,25 @@ import {
     ImageBackground,
     ScrollView,
     Animated,
- } from "react-native";
+} from "react-native";
+
+import Prompt from 'rn-prompt';
+
 
 import {
     connect
 } from "react-redux";
 
- import {
-     Room
-} from "../components"; 
+import {
+    Room
+} from "../components";
 
 import {
     getActiveRooms,
     enterRoom,
     leaveRoom,
     onReady,
+    createRoom,
 } from "../actions/room";
 
 const uuid = require("uuid");
@@ -31,7 +35,9 @@ const uuid = require("uuid");
 class Rooms extends React.Component {
     constructor(props) {
         super(props);
-
+        this.state = {
+            isOpenFormCreateRoom: false,
+        }
         this.element = {}
         this.wWidth = Dimensions.get('window').width;
         this.wHeigth = Dimensions.get('window').height;
@@ -41,8 +47,10 @@ class Rooms extends React.Component {
         this.props.getActiveRooms();
     }
 
-    onPressCreateRoom = () => { 
-        console.log("new room");
+    onPressCreateRoom = () => {
+        this.setState({
+            isOpenFormCreateRoom: true,
+        })
     }
 
     handleEnterRoom = (room_id) => {
@@ -56,7 +64,11 @@ class Rooms extends React.Component {
     handleOnReady = (room_id, user_id) => {
         this.props.onReady(room_id, user_id);
     }
-   
+
+    handleCreateRoom = name => {
+        this.props.createRoom(name);
+    }
+
     render() {
         const roomSelected = this.props.allRooms.filter(room => room.id === this.props.selectedRoom.idRoom)[0];
         return (
@@ -65,9 +77,11 @@ class Rooms extends React.Component {
                 source={require("../images/bg.png")}
                 style={styles.container}
             >
+
                 <View style={styles.barTop}>
                     <View style={styles.buttonNew} >
                         <Button
+                            disabled={this.props.selectedRoom.idRoom !== null}
                             title="New Room"
                             color="#841584"
                             onPress={this.onPressCreateRoom}
@@ -76,6 +90,7 @@ class Rooms extends React.Component {
 
                     <View style={styles.buttonPlay} >
                         <Button
+                            disabled={this.props.selectedRoom.idRoom !== null}
                             title="Play"
                             color="#008229"
                             onPress={this.onPressCreateRoom}
@@ -99,14 +114,29 @@ class Rooms extends React.Component {
                                     onEnterRoom={this.handleEnterRoom}
                                 />
                             );
-                        }) : 
-                        <Room
-                            roomData={roomSelected}
-                            onLeaveRoom={this.handleLeaveRoom}
-                            onPressReady={this.handleOnReady}
-                        />
+                        }) :
+                            <Room
+                                roomData={roomSelected}
+                                onLeaveRoom={this.handleLeaveRoom}
+                                onPressReady={this.handleOnReady}
+                            />
                     }
                 </ScrollView>
+                <Prompt
+                    title="Enter room name"
+                    placeholder="Enter room name"
+                    // defaultValue=
+                    visible={this.state.isOpenFormCreateRoom}
+                    onCancel={() => this.setState({
+                        isOpenFormCreateRoom: false,
+                    })}
+                    onSubmit={(value) => {
+                        this.setState({
+                            isOpenFormCreateRoom: false,
+                        })
+                        this.handleCreateRoom(value);
+                    }}
+                />
             </ImageBackground>
         )
     }
@@ -120,7 +150,7 @@ const styles = StyleSheet.create({
     },
     barTop: {
         marginTop: 50,
-        width: "100%",  
+        width: "100%",
         position: "relative"
     },
     buttonNew: {
@@ -173,7 +203,8 @@ const mapDispatchToProps = {
     getActiveRooms,
     enterRoom,
     leaveRoom,
-    onReady
+    onReady,
+    createRoom
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Rooms);
