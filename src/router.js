@@ -5,6 +5,7 @@ import {
     App,
     ConnectServer,
     Login,
+    Register,
     Rooms,
     WaitingRoom,
     GamePlayGround,
@@ -13,10 +14,11 @@ import {
 const AppRoute = StackNavigator(
     {
         // App: { screen: App },
-        // ConnectServer: { screen: ConnectServer },
-        // Login: { screen: Login },
+        ConnectServer: { screen: ConnectServer },
+        Login: { screen: Login },
+        Register: { screen: Register},
         Rooms: { screen: Rooms },
-        // WaitingRoom: { screen: WaitingRoom },
+        WaitingRoom: { screen: WaitingRoom },
         GamePlayGround: { screen: GamePlayGround }
     },
     {

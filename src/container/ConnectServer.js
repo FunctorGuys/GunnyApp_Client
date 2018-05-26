@@ -24,6 +24,9 @@ class ConnectServer extends React.Component {
     }
 
     componentWillMount() {
+        if (this.props.mySocket.id) {
+            this.props.mySocket.disconnect();
+        }
         this.setState({
             isConnecting: false
         })
@@ -80,7 +83,7 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = state => {
     return {
-        ...state,
+        mySocket: state.server.mySocket 
     }
 }
 

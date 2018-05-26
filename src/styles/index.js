@@ -33,7 +33,14 @@ const stylesPlayGround = StyleSheet.create({
     }
 });
 
+const bootstrap = StyleSheet.create({
+    textDanger: {
+        color: "#ff3f42",
+    }
+})
+
 export {
     stylesAppContainer,
-    stylesPlayGround
+    stylesPlayGround,
+    bootstrap
 }

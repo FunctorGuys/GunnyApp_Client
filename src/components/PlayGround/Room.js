@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
         transform: [
             {
                 translateX: -50
-            }userLogged
+            }
         ]
     },
     buttonLeave: {

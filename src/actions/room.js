@@ -6,6 +6,17 @@ import {
     SELECT_ROOM,
     ON_READY,
 } from "../constants/action.constants";
+
+const getMySocket = getState => getState().server.mySocket;
+
+export const getActiveRooms = () => (dispatch, getState) => {
+    // Get Active Rooms
+    console.log("getActiveRooms");
+    
+    const mySocket = getMySocket(getState);
+    mySocket.emit("getActiveRooms");
+}
+
 export const enterRoom = room_id => {
     return (dispatch, getState) => {
         const user = getState().user.userLogged;

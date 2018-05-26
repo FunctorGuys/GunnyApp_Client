@@ -2,29 +2,30 @@ import React from "react";
 import {
     View,
     TextInput,
-    Button,
     Text,
+    Button,
     StyleSheet
 } from "react-native";
+import {
+    bootstrap
+} from "../styles";
 import { connect } from "react-redux";
 import {
     getDataForm
 } from "../constants/function.common.js"
+
 import {
-    loginUser,
+    registerUser,
     getAbc
 } from "../actions/users";
-import {
-    bootstrap
-} from "../styles/index";
 
-class Login extends React.Component {
+class Register extends React.Component {
     constructor(props) {
         super(props);
         this.form_data = {};
         this.state = {
-            isConnecting: false,
             error: "",
+            isConnecting: false
         }
     }
 
@@ -39,26 +40,31 @@ class Login extends React.Component {
                 this.setState({
                     isConnecting: true,
                 })
-                await this.props.loginUser(data);
-                const { navigate } = this.props.navigation;
-                navigate("Rooms");
+                await this.props.registerUser(data, (er, data) => {
+                    if (!er) {
+                        this.setState({
+                            error: "",
+                            isConnecting: false
+                        })
+                        this.props.navigation.navigate("Login");
+                    }
+                });
+
             } catch(er) {
                 this.setState({
                     isConnecting: false,
-                    error: "Username and password incorrect!"
+                    error: er.response.data.error,
                 })
             }
         } else {
             this.setState({
-                isConnecting: false,
                 error: "Please fill all input!"
             })
         }
-        
     }
 
-    handleSignUp = () => {
-        this.props.navigation.navigate("Register");
+    handleLogin = () => {
+        this.props.navigation.navigate("Login");
     }
 
     render() {
@@ -74,7 +80,17 @@ class Login extends React.Component {
                     placeholder="Password"
                     ref={ref => this.form_data.password = ref}
                 />
-                <Text style={bootstrap.textDanger} >{this.state.error}</Text>
+                <TextInput
+                    style={styles.input}
+                    placeholder="Confirm Password"
+                    ref={ref => this.form_data.cfpassword = ref}
+                />
+                <TextInput
+                    style={styles.input}
+                    placeholder="Fullname"
+                    ref={ref => this.form_data.fullname = ref}
+                />
+                <Text style={bootstrap.textDanger}>{this.state.error}</Text>
                 <View
                     style={styles.buttonContainer}
                 >
@@ -86,9 +102,9 @@ class Login extends React.Component {
                     />
                     <View style={styles.br} />
                     <Button
-                        onPress={this.handleSignUp}
+                        onPress={this.handleLogin}
                         color="#55688f"
-                        title="Sign Up"
+                        title="Back"
                     />
                 </View>
             </View>
@@ -122,8 +138,8 @@ const mapStateToProps = state => {
 }
 
 const mapDispatchToProps = {
-    loginUser,
+    registerUser,
     getAbc,
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Login);
+export default connect(mapStateToProps, mapDispatchToProps)(Register);

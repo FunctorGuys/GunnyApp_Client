@@ -7,6 +7,7 @@ import { Provider } from "react-redux";
 import { applyMiddleware, createStore } from "redux";
 
 import AppRoute from "./src/router";
+import App from "./src/container/App";
 
 const store = createStore(
   rootReducer,

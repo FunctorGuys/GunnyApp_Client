@@ -20,9 +20,10 @@ import {
 } from "../components"; 
 
 import {
+    getActiveRooms,
     enterRoom,
     leaveRoom,
-    onReady
+    onReady,
 } from "../actions/room";
 
 const uuid = require("uuid");
@@ -34,6 +35,10 @@ class Rooms extends React.Component {
         this.element = {}
         this.wWidth = Dimensions.get('window').width;
         this.wHeigth = Dimensions.get('window').height;
+    }
+
+    componentWillMount() {
+        this.props.getActiveRooms();
     }
 
     onPressCreateRoom = () => { 
@@ -165,6 +170,7 @@ const mapStateToProps = store => {
 }
 
 const mapDispatchToProps = {
+    getActiveRooms,
     enterRoom,
     leaveRoom,
     onReady
