@@ -15,7 +15,8 @@ import {
 
 import {
     initSquares,
-    onPressSquare
+    onPressSquare,
+    setCaroWinner
 } from "../actions/room";
 
 const uuid = require('uuid');
@@ -31,6 +32,7 @@ class GamePlayGround extends React.Component {
                 x: null,
                 y: null,
             },
+            isStopGame: false,
         }
 
         this.numColSquare = 10;
@@ -41,11 +43,18 @@ class GamePlayGround extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
+        if (!nextProps.isRoomReady && !this.state.isStopGame) {
+            nextProps.navigation.navigate("Rooms");
+            this.setState({
+                isStopGame: true,
+            })
+        }
         if (this.state.waitForCheck.is) {
             const {x, y} = this.state.waitForCheck;
 
-            this.checkCaroWin(nextProps.squares, x, y, data => {
-                console.log(data);
+            this.checkCaroWin(nextProps.squares, x, y, arrayXandYs => {
+                // console.log(arrayXandYs);
+                nextProps.setCaroWinner(arrayXandYs);
             });
 
             this.setState({
@@ -57,6 +66,9 @@ class GamePlayGround extends React.Component {
     }
 
     componentWillMount() {
+        this.setState({
+            isStopGame: false,
+        })
         console.log("Will mount GAME PLAY GROUND");
         // this.setState(() => {
         //     for(let i = 0; i < this.numColSquare; i++) {
@@ -309,14 +321,18 @@ const stylesGamePlayGround = StyleSheet.create({
 
 const mapStateToProps = store => {
     return {
+        isRoomReady: store.rooms.selectedRoom.isReady,
         isAllowPress: store.rooms.selectedRoom.isAllowPress,
         squares: store.rooms.selectedRoom.squares,
+        winner: store.rooms.selectedRoom.winner,
+        roomData: store.rooms.allRooms.filter(room => room.id === store.rooms.selectedRoom.idRoom)[0],
     }
 }
 
 const mapDispatchToProps = {
     initSquares,
     onPressSquare,
+    setCaroWinner,
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(GamePlayGround);

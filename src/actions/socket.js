@@ -17,6 +17,10 @@ export const CANCEL_ROOM = "CANCEL_ROOM";
 export const ENTER_MY_ROOM = "ENTER_MY_ROOM";
 export const CREATE_ROOM = "CREATE_ROOM";
 export const ON_PRESS_SQUARE = "ON_PRESS_SQUARE";
+export const FILL_SQUARE_WIN = "FILL_SQUARE_WIN";
+export const SET_WINNER = "SET_WINNER";
+export const ROOM_STOP = "ROOM_STOP";
+
 const clientListen = (mySocket, dispatch, getState) => {
     mySocket.on("receivedActiveRooms", rooms => {
         console.log("receivedActiveRooms");
@@ -76,4 +80,33 @@ const clientListen = (mySocket, dispatch, getState) => {
             }
         })
     })
+
+    mySocket.on("fillSquareWin", arrayXandYs => {
+        dispatch({
+            type: FILL_SQUARE_WIN,
+            payload: {
+                arrayXandYs,
+            }
+        })
+    });
+
+    mySocket.on("stopRoom", () => {
+        dispatch({
+            type: ROOM_STOP,
+        })
+    })
+
+    // mySocket.on("setWinner", id_winner => {
+    //     // if (getState().user.userLogged.id === id_winner) {
+    //     //     dispatch({
+    //     //         type: 
+    //     //     })
+    //     // }
+    //     dispatch({
+    //         type: SET_WINNER,
+    //         payload: {
+    //             id_winner,
+    //         }
+    //     })
+    // })
 }

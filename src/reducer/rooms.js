@@ -19,6 +19,9 @@ import {
     CREATE_ROOM,
     ENTER_MY_ROOM,
     ON_PRESS_SQUARE,
+    FILL_SQUARE_WIN,
+    SET_WINNER,
+    ROOM_STOP,
 } from "../actions/socket";
 
 const initReducer = {
@@ -139,6 +142,16 @@ export default function(state = initReducer, { type, payload }) {
             }
         }
 
+        case ROOM_STOP: {
+            return {
+                ...state,
+                selectedRoom: {
+                    ...state.selectedRoom,
+                    isReady: false,
+                }
+            }
+        }
+
         case ON_PRESS_SQUARE: {
             const squares = [...state.selectedRoom.squares];
             squares[payload.x][payload.y].isFill = true;
@@ -162,6 +175,46 @@ export default function(state = initReducer, { type, payload }) {
                 }
             }
         }
+
+        case FILL_SQUARE_WIN: {
+            const squares = [...state.selectedRoom.squares];
+            payload.arrayXandYs.forEach(pos => {
+                squares[pos.x][pos.y].isWin = true;
+            })
+
+            return {
+                ...state,
+                selectedRoom: {
+                    ...state.selectedRoom,
+                    squares,
+                }
+            }
+            
+        }
+
+        // case SET_WINNER: {
+        //     const allRooms = state.allRooms.map(room => {
+        //         if (room.id === state.selectedRoom.idRoom) {
+        //             if (room.creater.id === payload.id_winner) {
+        //                 room.creater.win += 1;
+        //                 room.invitee.lose += 1; 
+        //             } else {
+        //                 room.creater.lose += 1;
+        //                 room.invitee.win += 1; 
+        //             }
+        //         }
+        //         return room;
+        //     })
+            
+        //     return {
+        //         ...state,
+        //         allRooms,
+        //         selectedRoom: {
+        //             ...state.selectedRoom,
+        //             winner: payload.id_winner,
+        //         }
+        //     }
+        // }
 
         case INIT_SQUARES: {
             return {

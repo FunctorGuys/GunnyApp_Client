@@ -124,3 +124,30 @@ export const onPressSquare = (x, y) => {
         return mySocket.emit("onPressSquare", ({x, y, room_id}));
     }
 }
+
+export const setCaroWinner = (arrayXandYs) => {
+    return (dispatch, getState) => {
+        const mySocket = getMySocket(getState);
+        const userLogged = getState().user.userLogged;
+        const roomData = getState().rooms.allRooms.filter(room => room.id === getState().rooms.selectedRoom.idRoom)[0];
+
+        let SocketIdLoser = roomData.creater.socket_id;
+        let IdLoser = roomData.creater.id;
+        let IdWinner = userLogged.id;
+        
+        if (roomData.creater.socket_id === mySocket.id) {
+            SocketIdLoser = roomData.invitee.socket_id;
+            IdLoser = roomData.invitee.id;
+        }
+
+        const data = {
+            idRoom: roomData.id,
+            SocketIdLoser,
+            IdLoser,
+            IdWinner,
+            arrayXandYs
+        }
+
+        mySocket.emit("setCaroWinner", data);
+    }
+}
