@@ -1,2 +1,2 @@
-export const O_CARO = 'o';
-export const X_CARO = 'x';
+export const O_CARO = 'O';
+export const X_CARO = 'X';

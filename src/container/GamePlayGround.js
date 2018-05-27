@@ -14,7 +14,8 @@ import {
 } from "../constants/caro.constants";
 
 import {
-    initSquares
+    initSquares,
+    onPressSquare
 } from "../actions/room";
 
 const uuid = require('uuid');
@@ -35,21 +36,22 @@ class GamePlayGround extends React.Component {
     }
 
     componentWillMount() {
-        this.setState(() => {
-            for(let i = 0; i < this.numColSquare; i++) {
-                const newRowAr = [];
-                for (let j = 0; j < this.numColSquare; j++) {
-                    newRowAr.push({
-                        id: i + "|" + j,
-                        isFill: false,
-                        isWin: false,
-                        text: "",
-                    });
-                }
-                this.state.squares.push(newRowAr);
-            }
-            return this.state;
-        });
+        console.log("Will mount GAME PLAY GROUND");
+        // this.setState(() => {
+        //     for(let i = 0; i < this.numColSquare; i++) {
+        //         const newRowAr = [];
+        //         for (let j = 0; j < this.numColSquare; j++) {
+        //             newRowAr.push({
+        //                 id: i + "|" + j,
+        //                 isFill: false,
+        //                 isWin: false,
+        //                 text: "",
+        //             });
+        //         }
+        //         this.state.squares.push(newRowAr);
+        //     }
+        //     return this.state;
+        // });
     }
 
     onPressSquare = _sq => {
@@ -57,17 +59,31 @@ class GamePlayGround extends React.Component {
             const posSq = _sq.id.split("|");
             const x = parseInt(posSq[0]);
             const y = parseInt(posSq[1]);
-            if (!this.state.squares[x][y].isFill) {
-                this.setState(() => {
-                    this.state.squares[x][y].isFill = true;
-                    this.state.squares[x][y].text = 'O';
-                    return this.state;
-                }, this.checkCaroWin(x, y, isWin => {
-                    if (isWin) {
-                        alert("DONE");
-                    }
-                }));
+            console.log(x, y);
+            if (this.props.isAllowPress) {
+                this.props.onPressSquare(x, y);
+            } else {
+                alert("Ban chua toi luot");
             }
+
+            // if (!this.state.squares[x][y].isFill) {
+            //     this.setState(() => {
+            //         this.state.squares[x][y].isFill = true;
+            //         this.state.squares[x][y].text = 'O';
+            //         return this.state;
+            //     });
+            // }
+            // if (!this.state.squares[x][y].isFill) {
+            //     this.setState(() => {
+            //         this.state.squares[x][y].isFill = true;
+            //         this.state.squares[x][y].text = 'O';
+            //         return this.state;
+            //     }, this.checkCaroWin(x, y, isWin => {
+            //         if (isWin) {
+            //             alert("DONE");
+            //         }
+            //     }));
+            // }
         }
     }
 
@@ -179,7 +195,7 @@ class GamePlayGround extends React.Component {
                     alignItems: 'center'
                 }}>
                 {
-                    this.state.squares.map(rowSq => {
+                    this.props.squares.map(rowSq => {
                         return (
                             <View key={uuid()}>
                                 {
@@ -200,7 +216,8 @@ class GamePlayGround extends React.Component {
                                                         textAlign: 'center',
                                                         backgroundColor: sq.isWin ? 'green' : 'transparent',
                                                         height: '100%',
-                                                        fontSize: this.sizeSquare/2
+                                                        fontSize: this.sizeSquare/2,
+                                                        color: sq.text === O_CARO ? "#0061ff" : "#ff0004"
                                                     }}>{sq.text}</Text>
                                                     : null
                                                 }
@@ -230,12 +247,14 @@ const stylesGamePlayGround = StyleSheet.create({
 
 const mapStateToProps = store => {
     return {
-        ...store,
+        isAllowPress: store.rooms.selectedRoom.isAllowPress,
+        squares: store.rooms.selectedRoom.squares,
     }
 }
 
 const mapDispatchToProps = {
     initSquares,
+    onPressSquare,
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(GamePlayGround);

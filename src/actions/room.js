@@ -6,6 +6,10 @@ import {
     SELECT_ROOM,
     ON_READY,
 } from "../constants/action.constants";
+import {
+    O_CARO,
+    X_CARO
+} from "../constants/caro.constants";
 
 const uuid = require("uuid");
 
@@ -28,7 +32,6 @@ export const enterRoom = room_id => {
             type: SELECT_ROOM,
             payload: {
                 room_id,
-                user
             }
         })
     }
@@ -46,12 +49,23 @@ export const leaveRoom = room_id => {
 
 export const onReady = (room_id, user_id) => {
     return (dispatch, getState) => {
+        const mySocket = getMySocket(getState);
+        mySocket.emit("onReady", {room_id, user_id});
+    }
+}
+
+export const onNoReady = (room_id, user_id) => {
+    return (dispatch, getState) => {
+        const mySocket = getMySocket(getState);
+        mySocket.emit("onNoReady", {room_id, user_id});
+    }
+}
+
+export const ROOM_START = "ROOM_START";
+export const roomReadyToStart = () => {
+    return (dispatch) => {
         dispatch({
-            type: ON_READY,
-            payload: {
-                room_id,
-                user_id
-            }
+            type: ROOM_START,
         })
     }
 }
@@ -79,6 +93,7 @@ export const initSquares = (numColSquare) => dispatch => {
     })
 }
 
+
 export const createRoom = name => {
     return (dispatch, getState) => {
         const mySocket = getMySocket(getState);
@@ -89,10 +104,23 @@ export const createRoom = name => {
             isFull: false,
             creater: {
                 ...user,
+                socket_id: mySocket.id,
+                caro_text: X_CARO,
                 isReady: false,
             },
             invitee: {}
         }
         mySocket.emit("createRoom", newRoom);
+    }
+}
+
+// Actions for room playing
+
+export const onPressSquare = (x, y) => {
+    return (dispatch, getState) => {
+        const mySocket = getMySocket(getState);
+        const room_id = getState().rooms.selectedRoom.idRoom;
+        // const user = getState().user.userLogged;
+        mySocket.emit("onPressSquare", ({x, y, room_id}));
     }
 }

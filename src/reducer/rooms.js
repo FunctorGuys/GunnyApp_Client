@@ -9,6 +9,7 @@ import {
 
 import {
     INIT_SQUARES,
+    ROOM_START,
 } from "../actions/room";
 
 import {
@@ -17,6 +18,7 @@ import {
     CANCEL_ROOM,
     CREATE_ROOM,
     ENTER_MY_ROOM,
+    ON_PRESS_SQUARE,
 } from "../actions/socket";
 
 const initReducer = {
@@ -24,6 +26,7 @@ const initReducer = {
     selectedRoom: {
         idRoom: null,
         isReady: false,
+        isAllowPress: true,
         winner: null,
         squares: [],
     }
@@ -67,8 +70,8 @@ export default function(state = initReducer, { type, payload }) {
             return {
                 ...state,
                 selectedRoom: {
+                    ...state.selectedRoom,
                     idRoom: payload.room_id,
-                    winner: null
                 }
             }
         }
@@ -77,10 +80,8 @@ export default function(state = initReducer, { type, payload }) {
             return {
                 ...state,
                 selectedRoom: {
+                    ...state.selectedRoom,
                     idRoom: payload.newRoom.id,
-                    isReady: false,
-                    winner: null,
-                    squares: [],
                 }
             }
         }
@@ -125,6 +126,40 @@ export default function(state = initReducer, { type, payload }) {
             return {
                 ...state,
                 allRooms,
+            }
+        }
+
+        case ROOM_START: {
+            return {
+                ...state,
+                selectedRoom: {
+                    ...state.selectedRoom,
+                    isReady: true
+                }
+            }
+        }
+
+        case ON_PRESS_SQUARE: {
+            const squares = [...state.selectedRoom.squares];
+            squares[payload.x][payload.y].isFill = true;
+            squares[payload.x][payload.y].text = payload.caro_text;
+
+            const curRoom = state.allRooms.filter(room => room.id === state.selectedRoom.idRoom)[0];
+            const me_caro_text = curRoom.creater.id === payload.userLogged.id ? curRoom.creater.caro_text : curRoom.invitee.caro_text;
+            let isAllowPress;
+            if (me_caro_text === payload.caro_text) { // Toi dang danh thi diable danh
+                isAllowPress = false;
+            } else { // nguoi khac danh thi mo toi ra
+                isAllowPress = true;
+            }
+
+            return {
+                ...state,
+                selectedRoom: {
+                    ...state.selectedRoom,
+                    isAllowPress,
+                    squares,
+                }
             }
         }
 

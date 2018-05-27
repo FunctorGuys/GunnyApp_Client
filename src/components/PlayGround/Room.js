@@ -57,6 +57,11 @@ class Room extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
+        // console.log("nextProps.roomData", nextProps.roomData);
+        const { creater, invitee } = nextProps.roomData;
+        if (creater.isReady && invitee.isReady && !nextProps.selectedRoom.isReady) {
+            nextProps.onPlaying();
+        }
     }
 
     onPressCreateRoom = () => { 
@@ -68,6 +73,10 @@ class Room extends React.Component {
 
     onPressReady = () => {
         this.props.onPressReady(this.props.roomData.id, this.props.userLogged.id);
+    }
+
+    onPressNoReady = () => {
+        this.props.onPressNoReady(this.props.roomData.id, this.props.userLogged.id);
     }
 
     getButtonCenter = () => {
@@ -96,6 +105,7 @@ class Room extends React.Component {
     }
 
     getButtonsJoined = () => {
+        const me = this.props.roomData.creater.id === this.props.userLogged.id ? this.props.roomData.creater : this.props.roomData.invitee;
         return (
             <View>
                 <View style={styles.buttonLeave} >
@@ -108,11 +118,11 @@ class Room extends React.Component {
 
                 <View style={styles.buttonReady} >
                     {
-                        this.props.roomData.invitee.isReady ?
+                        me.isReady ?
                         <Button
                             title="Hủy sẵn sàng"
                             color="#009dc4"
-                            onPress={() => {}}
+                            onPress={this.onPressNoReady}
                         /> :
                         <Button
                             title="Sẵn sàng"

@@ -27,7 +27,9 @@ import {
     enterRoom,
     leaveRoom,
     onReady,
+    onNoReady,
     createRoom,
+    roomReadyToStart,
 } from "../actions/room";
 
 const uuid = require("uuid");
@@ -67,6 +69,15 @@ class Rooms extends React.Component {
 
     handleCreateRoom = name => {
         this.props.createRoom(name);
+    }
+
+    handlePlaying = async () => {
+        try {
+            await this.props.roomReadyToStart();
+            this.props.navigation.navigate("GamePlayGround");
+        } catch (er) {
+            console.log(er);
+        }
     }
 
     render() {
@@ -119,6 +130,8 @@ class Rooms extends React.Component {
                                 roomData={roomSelected}
                                 onLeaveRoom={this.handleLeaveRoom}
                                 onPressReady={this.handleOnReady}
+                                onPressNoReady={this.props.onNoReady}
+                                onPlaying={this.handlePlaying}
                             />
                     }
                 </ScrollView>
@@ -204,7 +217,9 @@ const mapDispatchToProps = {
     enterRoom,
     leaveRoom,
     onReady,
-    createRoom
+    onNoReady,
+    createRoom,
+    roomReadyToStart
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Rooms);

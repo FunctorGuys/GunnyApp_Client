@@ -1,5 +1,5 @@
 export const sk_connect = (socketClient, host) => {
-    return dispatch => {
+    return (dispatch, getState) => {
         dispatch({
             type: "CONNECT_SOCKET",
             payload: {
@@ -7,7 +7,7 @@ export const sk_connect = (socketClient, host) => {
                 socketClient,
             },
         })
-        clientListen(socketClient, dispatch);
+        clientListen(socketClient, dispatch, getState);
     }
 }
 
@@ -16,7 +16,8 @@ export const UPDATE_ROOM = "UPDATE_ROOM";
 export const CANCEL_ROOM = "CANCEL_ROOM";
 export const ENTER_MY_ROOM = "ENTER_MY_ROOM";
 export const CREATE_ROOM = "CREATE_ROOM";
-const clientListen = (mySocket, dispatch) => {
+export const ON_PRESS_SQUARE = "ON_PRESS_SQUARE";
+const clientListen = (mySocket, dispatch, getState) => {
     mySocket.on("receivedActiveRooms", rooms => {
         console.log("receivedActiveRooms");
         dispatch({
@@ -61,6 +62,17 @@ const clientListen = (mySocket, dispatch) => {
             type: ENTER_MY_ROOM,
             payload: {
                 newRoom,
+            }
+        })
+    })
+
+    mySocket.on("onPressSquare", data => {
+        const userLogged = getState().user.userLogged;
+        dispatch({
+            type: ON_PRESS_SQUARE,
+            payload: {
+                ...data,
+                userLogged,
             }
         })
     })
