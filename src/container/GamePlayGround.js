@@ -26,13 +26,34 @@ class GamePlayGround extends React.Component {
         this.state = {
             squares: [],
             whoWin: null,
+            waitForCheck: {
+                is: false,
+                x: null,
+                y: null,
+            },
         }
 
         this.numColSquare = 10;
         this.wWidth = Dimensions.get('window').width;
         this.wHeigth = Dimensions.get('window').height;
-        this.sizeSquare = parseInt(((this.wWidth > this.wHeigth ? this.wHeigth : this.wWidth) - 50)/this.numColSquare, 10);
+        this.sizeSquare = parseInt(((this.wWidth > this.wHeigth ? this.wHeigth : this.wWidth) - 50) / this.numColSquare, 10);
         this.props.initSquares(this.numColSquare);
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (this.state.waitForCheck.is) {
+            const {x, y} = this.state.waitForCheck;
+
+            this.checkCaroWin(nextProps.squares, x, y, data => {
+                console.log(data);
+            });
+
+            this.setState({
+                waitForCheck: {
+                    is: false,
+                }
+            });
+        }
     }
 
     componentWillMount() {
@@ -55,13 +76,31 @@ class GamePlayGround extends React.Component {
     }
 
     onPressSquare = _sq => {
-        return () => {
+        return async () => {
             const posSq = _sq.id.split("|");
             const x = parseInt(posSq[0]);
             const y = parseInt(posSq[1]);
             console.log(x, y);
             if (this.props.isAllowPress) {
-                this.props.onPressSquare(x, y);
+                try {
+                    if (this.props.squares[x][y].isFill) throw new Error("Please choose empty space");
+                    await this.props.onPressSquare(x, y);
+                    this.setState({
+                        waitForCheck: {
+                            is: true,
+                            x,
+                            y,
+                        }
+                    });
+                    // console.log(this.props.squares[x][y]);
+                    
+                    // Check caro here
+
+
+
+                } catch (er) {
+                    alert(er);
+                }
             } else {
                 alert("Ban chua toi luot");
             }
@@ -87,46 +126,59 @@ class GamePlayGround extends React.Component {
         }
     }
 
-    checkCaroWin = (x, y, cb) => {
-        return () => {
-            const text = this.state.squares[x][y].text;
+    checkCaroWin = (squares, x, y, cb) => {
+        // return () => {
+            const text = squares[x][y].text;
             let dem = 0;
             let isChecked = false;
             // checkNgang
-            for(let ng = x - 4; ng <= x + 4 ; ng++) {
+            for (let ng = x - 4; ng <= x + 4; ng++) {
                 if (ng < 0 || ng > this.numColSquare - 1) continue;
-                if(this.state.squares[ng][y].isFill && this.state.squares[ng][y].text === text) dem++;
+                if (squares[ng][y].isFill && squares[ng][y].text === text) dem++;
                 else dem = 0;
                 if (dem === 5) {
-                    for(let w = ng - 4; w <= ng; w++) {
-                        this.setState(() => {
-                            this.state.squares[w][y].isWin = true;
-                            this.state.whoWin = this.state.squares[x][y].text;
-                            return this.state;
+                    const arPositionWin = [];
+                    for (let w = ng - 4; w <= ng; w++) {
+                        arPositionWin.push({
+                            x: w,
+                            y: y,
                         });
+                        // this.setState(() => {
+                        //     squares[w][y].isWin = true;
+                        //     this.state.whoWin = squares[x][y].text;
+                        //     return this.state;
+                        // });
                     }
+
                     isChecked = true;
-                    cb(true);
+                    cb(arPositionWin);
                     break;
                 }
             }
             if (isChecked) return;
             // check doc
             dem = 0;
-            for(let doc = y - 4; doc <= y + 4 ; doc++) {
+            for (let doc = y - 4; doc <= y + 4; doc++) {
                 if (doc < 0 || doc > this.numColSquare - 1) continue;
-                if(this.state.squares[x][doc].isFill && this.state.squares[x][doc].text === text) dem++;
+                if (squares[x][doc].isFill && squares[x][doc].text === text) dem++;
                 else dem = 0;
                 if (dem === 5) {
-                    for(let w = doc - 4; w <= doc; w++) {
-                        this.setState(() => {
-                            this.state.squares[x][w].isWin = true;
-                            this.state.whoWin = this.state.squares[x][y].text;
-                            return this.state;
+                    const arPositionWin = [];
+                    for (let w = doc - 4; w <= doc; w++) {
+                        arPositionWin.push({
+                            x: x,
+                            y: w,
                         });
+                        // this.setState(() => {
+                        //     squares[x][w].isWin = true;
+                        //     this.state.whoWin = squares[x][y].text;
+                        //     return this.state;
+                        // });
+
                     }
+
                     isChecked = true;
-                    cb(true);
+                    cb(arPositionWin);
                     break;
                 }
             }
@@ -135,100 +187,110 @@ class GamePlayGround extends React.Component {
             // Cheo trai
             if (isChecked) return;
             dem = 0;
-            for(let cheoT = x - 4; cheoT <= x + 4 ; cheoT++) {
+            for (let cheoT = x - 4; cheoT <= x + 4; cheoT++) {
                 const _x = cheoT;
                 const _y = y - (x - cheoT);
 
                 if (_x < 0 || _y < 0 || _x > this.numColSquare - 1 || _y > this.numColSquare - 1) continue;
-                if(this.state.squares[_x][_y].isFill && this.state.squares[_x][_y].text === text) dem++;
+                if (squares[_x][_y].isFill && squares[_x][_y].text === text) dem++;
                 else dem = 0;
                 if (dem === 5) {
-                    for(let w = _x - 4; w <= _x; w++) {
+                    const arPositionWin = [];
+                    for (let w = _x - 4; w <= _x; w++) {
                         const _w = _y - (_x - w);
-                        this.setState(() => {
-                            this.state.squares[w][_w].isWin = true;
-                            this.state.whoWin = this.state.squares[x][y].text;
-                            return this.state;
+                        arPositionWin.push({
+                            x: w,
+                            y: _w,
                         });
+                        // this.setState(() => {
+                        //     squares[w][_w].isWin = true;
+                        //     this.state.whoWin = squares[x][y].text;
+                        //     return this.state;
+                        // });
                     }
                     isChecked = true;
-                    cb(true);
+                    cb(arPositionWin);
                     break;
                 }
             }
             if (isChecked) return;
             // Cheo phai
             dem = 0;
-            for(let cheoP = x - 4; cheoP <= x + 4 ; cheoP++) {
+            for (let cheoP = x - 4; cheoP <= x + 4; cheoP++) {
                 const _x = cheoP;
                 const _y = y + (x - cheoP);
 
                 if (_x < 0 || _y < 0 || _x > this.numColSquare - 1 || _y > this.numColSquare - 1) continue;
-                if(this.state.squares[_x][_y].isFill && this.state.squares[_x][_y].text === text) dem++;
+                if (squares[_x][_y].isFill && squares[_x][_y].text === text) dem++;
                 else dem = 0;
                 if (dem === 5) {
-                    for(let w = _x - 4; w <= _x; w++) {
+                    const arPositionWin = [];
+                    for (let w = _x - 4; w <= _x; w++) {
                         const _w = _y + (_x - w);
-                        this.setState(() => {
-                            this.state.squares[w][_w].isWin = true;
-                            this.state.whoWin = this.state.squares[x][y].text;
-                            return this.state;
+                        arPositionWin.push({
+                            x: w,
+                            y: _w,
                         });
+                        // this.setState(() => {
+                        //     squares[w][_w].isWin = true;
+                        //     this.state.whoWin = squares[x][y].text;
+                        //     return this.state;
+                        // });
                     }
                     isChecked = true;
-                    cb(true);
+                    cb(arPositionWin);
                     break;
                 }
             }
-        }
-    } 
+        // }
+    }
 
     render() {
         return (
             <View style={stylesGamePlayGround.container}>
                 <Text>Caro</Text>
                 <View style={{
-                    width: this.sizeSquare*this.numColSquare,
-                    height: this.sizeSquare*this.numColSquare,
+                    width: this.sizeSquare * this.numColSquare,
+                    height: this.sizeSquare * this.numColSquare,
                     flex: 1, flexDirection: 'row',
                     justifyContent: 'center',
                     alignItems: 'center'
                 }}>
-                {
-                    this.props.squares.map(rowSq => {
-                        return (
-                            <View key={uuid()}>
-                                {
-                                    rowSq.map(sq => {
-                                        return (
-                                            <TouchableOpacity key={sq.id}
-                                                style={{
-                                                    borderWidth: 1,
-                                                    borderColor: "black",
-                                                    width: this.sizeSquare,
-                                                    height: this.sizeSquare
-                                                }}
-                                                onPress={this.onPressSquare(sq)}
-                                            >
-                                                {
-                                                    sq.isFill ? 
-                                                    <Text style={{
-                                                        textAlign: 'center',
-                                                        backgroundColor: sq.isWin ? 'green' : 'transparent',
-                                                        height: '100%',
-                                                        fontSize: this.sizeSquare/2,
-                                                        color: sq.text === O_CARO ? "#0061ff" : "#ff0004"
-                                                    }}>{sq.text}</Text>
-                                                    : null
-                                                }
-                                            </TouchableOpacity>
-                                        )
-                                    })
-                                }
-                            </View>
-                        )
-                    })
-                }
+                    {
+                        this.props.squares.map(rowSq => {
+                            return (
+                                <View key={uuid()}>
+                                    {
+                                        rowSq.map(sq => {
+                                            return (
+                                                <TouchableOpacity key={sq.id}
+                                                    style={{
+                                                        borderWidth: 1,
+                                                        borderColor: "black",
+                                                        width: this.sizeSquare,
+                                                        height: this.sizeSquare
+                                                    }}
+                                                    onPress={this.onPressSquare(sq)}
+                                                >
+                                                    {
+                                                        sq.isFill ?
+                                                            <Text style={{
+                                                                textAlign: 'center',
+                                                                backgroundColor: sq.isWin ? 'green' : 'transparent',
+                                                                height: '100%',
+                                                                fontSize: this.sizeSquare / 2,
+                                                                color: sq.text === O_CARO ? "#0061ff" : "#ff0004"
+                                                            }}>{sq.text}</Text>
+                                                            : null
+                                                    }
+                                                </TouchableOpacity>
+                                            )
+                                        })
+                                    }
+                                </View>
+                            )
+                        })
+                    }
                 </View>
             </View>
         )
@@ -237,11 +299,11 @@ class GamePlayGround extends React.Component {
 
 const stylesGamePlayGround = StyleSheet.create({
     container: {
-      flex: 1,
-      flexDirection: 'column',
-      backgroundColor: '#ccc',
-      alignItems: 'center',
-      justifyContent: 'center',
+        flex: 1,
+        flexDirection: 'column',
+        backgroundColor: '#ccc',
+        alignItems: 'center',
+        justifyContent: 'center',
     },
 });
 

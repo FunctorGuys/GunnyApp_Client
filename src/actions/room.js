@@ -121,6 +121,6 @@ export const onPressSquare = (x, y) => {
         const mySocket = getMySocket(getState);
         const room_id = getState().rooms.selectedRoom.idRoom;
         // const user = getState().user.userLogged;
-        mySocket.emit("onPressSquare", ({x, y, room_id}));
+        return mySocket.emit("onPressSquare", ({x, y, room_id}));
     }
 }

@@ -66,7 +66,7 @@ const clientListen = (mySocket, dispatch, getState) => {
         })
     })
 
-    mySocket.on("onPressSquare", data => {
+    mySocket.on("onPressSquare", async (data) => {
         const userLogged = getState().user.userLogged;
         dispatch({
             type: ON_PRESS_SQUARE,
