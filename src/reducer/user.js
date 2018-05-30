@@ -9,6 +9,8 @@ import {
 
 import {
     SET_WINNER,
+    IM_WINNER,
+    IM_LOSER
 } from "../actions/socket";
 
 const initReducer = {
@@ -44,6 +46,26 @@ const user = (state = initReducer, { type, payload } ) => {
             return {
                 isLogged: false,
                 userLogged: {}
+            }
+        }
+
+        case IM_WINNER: {
+            return {
+                ...state,
+                userLogged: {
+                    ...state.userLogged,
+                    win: state.userLogged.win + 1
+                }
+            }
+        }
+
+        case IM_LOSER: {
+            return {
+                ...state,
+                userLogged: {
+                    ...state.userLogged,
+                    lose: state.userLogged.lose + 1
+                }
             }
         }
 

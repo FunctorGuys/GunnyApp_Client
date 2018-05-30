@@ -44,6 +44,7 @@ class GamePlayGround extends React.Component {
 
     componentWillReceiveProps(nextProps) {
         if (!nextProps.isRoomReady && !this.state.isStopGame) {
+
             nextProps.navigation.navigate("Rooms");
             this.setState({
                 isStopGame: true,
@@ -87,12 +88,15 @@ class GamePlayGround extends React.Component {
         // });
     }
 
-    onPressSquare = _sq => {
-        return async () => {
-            const posSq = _sq.id.split("|");
+    onPressSquare = async id => {
+        // return async () => {
+            const posSq = id.split("|");
             const x = parseInt(posSq[0]);
             const y = parseInt(posSq[1]);
             console.log(x, y);
+
+            // This is for product
+
             if (this.props.isAllowPress) {
                 try {
                     if (this.props.squares[x][y].isFill) throw new Error("Please choose empty space");
@@ -104,18 +108,14 @@ class GamePlayGround extends React.Component {
                             y,
                         }
                     });
-                    // console.log(this.props.squares[x][y]);
-                    
-                    // Check caro here
-
-
-
                 } catch (er) {
                     alert(er);
                 }
             } else {
                 alert("Ban chua toi luot");
             }
+
+            // This is for testing
 
             // if (!this.state.squares[x][y].isFill) {
             //     this.setState(() => {
@@ -124,18 +124,8 @@ class GamePlayGround extends React.Component {
             //         return this.state;
             //     });
             // }
-            // if (!this.state.squares[x][y].isFill) {
-            //     this.setState(() => {
-            //         this.state.squares[x][y].isFill = true;
-            //         this.state.squares[x][y].text = 'O';
-            //         return this.state;
-            //     }, this.checkCaroWin(x, y, isWin => {
-            //         if (isWin) {
-            //             alert("DONE");
-            //         }
-            //     }));
-            // }
-        }
+
+        // }
     }
 
     checkCaroWin = (squares, x, y, cb) => {
@@ -260,7 +250,7 @@ class GamePlayGround extends React.Component {
     render() {
         return (
             <View style={stylesGamePlayGround.container}>
-                <Text>Caro</Text>
+                <Text>Caro online</Text>
                 <View style={{
                     width: this.sizeSquare * this.numColSquare,
                     height: this.sizeSquare * this.numColSquare,
@@ -282,7 +272,7 @@ class GamePlayGround extends React.Component {
                                                         width: this.sizeSquare,
                                                         height: this.sizeSquare
                                                     }}
-                                                    onPress={this.onPressSquare(sq)}
+                                                    onPress={this.onPressSquare.bind(this, sq.id)}
                                                 >
                                                     {
                                                         sq.isFill ?

@@ -20,6 +20,8 @@ export const ON_PRESS_SQUARE = "ON_PRESS_SQUARE";
 export const FILL_SQUARE_WIN = "FILL_SQUARE_WIN";
 export const SET_WINNER = "SET_WINNER";
 export const ROOM_STOP = "ROOM_STOP";
+export const IM_WINNER = "IM_WINNER";
+export const IM_LOSER = "IM_LOSER";
 
 const clientListen = (mySocket, dispatch, getState) => {
     mySocket.on("receivedActiveRooms", rooms => {
@@ -93,6 +95,19 @@ const clientListen = (mySocket, dispatch, getState) => {
     mySocket.on("stopRoom", () => {
         dispatch({
             type: ROOM_STOP,
+        })
+    })
+
+    mySocket.on(IM_WINNER, () => {
+        alert("Chúc mừng, bạn đã thắng!");
+        dispatch({
+            type: IM_WINNER,
+        })
+    })
+    mySocket.on(IM_LOSER, () => {
+        alert("Opps, Bạn đã thua rồi!");
+        dispatch({
+            type: IM_LOSER,
         })
     })
 
