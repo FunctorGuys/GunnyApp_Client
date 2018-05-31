@@ -68,16 +68,6 @@ const user = (state = initReducer, { type, payload } ) => {
                 }
             }
         }
-
-        // case SET_WINNER: {
-        //     if (payload.id_winner === state.userLogged.id) {
-        //         state.userLogged.win += 1;
-        //     } else {
-        //         state.userLogged.lose += 1;
-        //     }
-
-        //     return state;
-        // }
         
         default: return state;
     }

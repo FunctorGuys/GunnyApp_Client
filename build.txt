@@ -1,0 +1,7 @@
+npm install -g exp
+exp login
+exp build:android
+
+login: jinsphan/jinsphanEP001
+
+download: https://exp-shell-app-assets.s3-us-west-1.amazonaws.com/android%2F%40jinsphan%2Fyour-app-slug-303e7d8a-6488-11e8-b1f8-0a580a780406-signed.apk
