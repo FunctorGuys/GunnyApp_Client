@@ -71,6 +71,16 @@ class Rooms extends React.Component {
         this.props.createRoom(name);
     }
 
+    handlePlayRandomRoom = () => {
+        const roomsNotFull = this.props.allRooms.filter(room => !room.isFull);
+        if (roomsNotFull.length === 0) {
+            alert("Hết phòng để chơi, vui lòng tạo thêm phòng");
+        } else {
+            let room = roomsNotFull[Math.floor(Math.random()*roomsNotFull.length)];
+            this.handleEnterRoom(room.id);
+        }
+    }
+
     handlePlaying = async () => {
         try {
             await this.props.roomReadyToStart();
@@ -104,7 +114,7 @@ class Rooms extends React.Component {
                             disabled={this.props.selectedRoom.idRoom !== null}
                             title="Play"
                             color="#008229"
-                            onPress={this.onPressCreateRoom}
+                            onPress={this.handlePlayRandomRoom}
                         />
                     </View>
                 </View>
